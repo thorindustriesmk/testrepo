@@ -56,8 +56,6 @@ jobs:
       # Send Slack Notification for Successful Deployment
       - name: Send Slack Notification (Success)
         if: success()
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           $payload = @{
             text = "Deployment to Production successful"
@@ -65,13 +63,12 @@ jobs:
           $headers = @{
             "Content-Type" = "application/json"
           }
+          $SLACK_WEBHOOK_URL = ${{ secrets.SLACK_WEBHOOK_URL }}
           Invoke-RestMethod -Uri $SLACK_WEBHOOK_URL -Method POST -Headers $headers -Body ($payload | ConvertTo-Json -Depth 4)
 
       # Send Slack Notification for Failed Deployment
       - name: Send Slack Notification (Failure)
         if: failure()
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           $payload = @{
             text = "Deployment to Production failed"
@@ -79,4 +76,5 @@ jobs:
           $headers = @{
             "Content-Type" = "application/json"
           }
+          $SLACK_WEBHOOK_URL = ${{ secrets.SLACK_WEBHOOK_URL }}
           Invoke-RestMethod -Uri $SLACK_WEBHOOK_URL -Method POST -Headers $headers -Body ($payload | ConvertTo-Json -Depth 4)
