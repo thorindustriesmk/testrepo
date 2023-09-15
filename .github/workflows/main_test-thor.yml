@@ -53,11 +53,18 @@ jobs:
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B119728CDF8842849CE764A37D3C0FCF }}
           package: .
 
-      # Add Slack Notification Step
-      - name: Send Slack Notification
+      # Send Slack Notification for Successful Deployment
+      - name: Send Slack Notification (Success)
+        if: success()
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"Deployment to Production successful"}' \
-          $SLACK_WEBHOOK_URL
+          curl -X POST -H 'Content-type: application/json' -d '{"text":"Deployment to Production successful"}' $SLACK_WEBHOOK_URL
+
+      # Send Slack Notification for Failed Deployment
+      - name: Send Slack Notification (Failure)
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' -d '{"text":"Deployment to Production failed"}' $SLACK_WEBHOOK_URL
