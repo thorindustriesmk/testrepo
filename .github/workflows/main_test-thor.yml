@@ -62,7 +62,7 @@ jobs:
           } else {
             $message += "failed"
           }
-          $slackWebhook = $env:SLACK_WEBHOOK_URL
+          $slackWebhook = "YOUR_SLACK_WEBHOOK_URL_HERE"  # Replace with your Slack webhook URL
           $jsonPayload = @{
             text = $message
           } | ConvertTo-Json
