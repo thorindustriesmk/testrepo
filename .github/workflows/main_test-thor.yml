@@ -53,17 +53,23 @@ jobs:
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B119728CDF8842849CE764A37D3C0FCF }}
           package: .
 
-      - name: Send Slack Notification
-        if: always()  # This step will always run
+      - name: Send Slack Notification (Success)
+        if: success()
         run: |
-          $message = "Deployment to Production "
-          if ($env:GITHUB_JOB_STATUS -eq 'success') {
-            $message += "successful"
-          } else {
-            $message += "failed"
-          }
           $payload = @{
-            text = $message
+            text = "Deployment to Production successful"
+          }
+          $headers = @{
+            "Content-Type" = "application/json"
+          }
+          $SLACK_WEBHOOK_URL = ${{ secrets.SLACK_WEBHOOK_URL }}
+          Invoke-RestMethod -Uri $SLACK_WEBHOOK_URL -Method POST -Headers $headers -Body ($payload | ConvertTo-Json)
+
+      - name: Send Slack Notification (Failure)
+        if: failure()
+        run: |
+          $payload = @{
+            text = "Deployment to Production failed"
           }
           $headers = @{
             "Content-Type" = "application/json"
